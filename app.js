@@ -3,6 +3,10 @@ const express = require('express')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 const cors = require('cors')
+const userRoutes = require('./routes/userRoutes')
+const productRoutes = require('./routes/productRoutes')
+const orderRoutes = require('./routes/orderRoutes')
+
 
 // Initialize dotenv
 dotenv.config()
@@ -13,7 +17,7 @@ const port = process.env.PORT || 8000
 
 // MongoDB connection
 
-mongoose.connect(`mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@cluster0.qk2mc8i.mongodb.net/booking-system-api?retryWrites=true&w=majority`, {
+mongoose.connect(`mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@cluster0.qk2mc8i.mongodb.net/e-commerce-api?retryWrites=true&w=majority`, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	})
@@ -27,6 +31,11 @@ db.once('open', () => console.log("Connected to MongoDB"))
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
+
+app.use('/users', userRoutes)
+app.use('/products', productRoutes)
+app.use('/orders', orderRoutes)
+
 
 // app start listening to requests
 app.listen(port, () => console.log(`API is now running on localhost:${port}`))
