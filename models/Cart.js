@@ -4,7 +4,8 @@ const cart_schema = new mongoose.Schema({
 		products: [{
 			productId: mongoose.ObjectId,
 			price: Number,
-			quantity: Number
+			quantity: Number,
+			subtotal: Number,
 		}],
 		totalAmount: {
 			type: Number,

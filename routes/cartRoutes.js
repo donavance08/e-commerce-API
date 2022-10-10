@@ -13,9 +13,17 @@ router.patch('/add', auth.verify, (request, response) => {
 })
 
 // For removing a product from users cart
-router.patch('/:id/change-quantity', auth.verify, (request, response) => {
+router.patch('/:id/:operator/change-quantity', auth.verify, (request, response) => {
 	const cart_id = auth.decode(request.headers.authorization).cartId
-	CartController.removeFromCart(cart_id, request.params.id).then(result => {
+	CartController.incrementOrDecrementQuantity(cart_id, request.params.id, request.params.operator)
+	.then(result => {
+		response.send(result)
+	})
+})
+
+router.patch('/:id/remove', auth.verify, (request,response) => {
+	const cart_id = auth.decode(request.headers.authorization).cartId
+	CartController.removeItem(cart_id, request.params.id).then(result => {
 		response.send(result)
 	})
 })
