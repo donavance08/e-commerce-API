@@ -1,0 +1,414 @@
+{
+	"info": {
+		"_postman_id": "95b895b1-942a-4153-9203-6124ed552aea",
+		"name": "Capstone two",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23128668"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "user registration",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"firstName\": \"Ella\",\r\n\t\"lastName\": \"washIngton\",\r\n\t\"email\": \"ewAsH@mail.com\",\r\n\t\"contactNo\" : [{\r\n\t\t\t\"number\": \"+0438-686-5482\"\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"type\": \"Landline\",\r\n\t\t\t\"number\": \"+0438-564-5485\"\r\n\t\t}\r\n\t],\r\n\t\"password\": \"password\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/users/register",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user authentication",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNDI2NGY0OTBiMTUyZmE4YzA3MThmZSIsImVtYWlsIjoiZXdhc2hAbWFpbC5jb20iLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNjY1Mjk1Njc4LCJleHAiOjE2NjUzMDY0Nzh9.AqLMPAmlv9A68lFyfdNnFodQwo1W8-TQW3dKbA3ceVQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"Ewash@mail.com\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/users/login",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "retrieve user details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNDI2NGY0OTBiMTUyZmE4YzA3MThmZSIsImVtYWlsIjoiZXdhc2hAbWFpbC5jb20iLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNjY1Mjk1Njc4LCJleHAiOjE2NjUzMDY0Nzh9.AqLMPAmlv9A68lFyfdNnFodQwo1W8-TQW3dKbA3ceVQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/users/63425f1089fdfe4e04d1fe70/details",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"users",
+								"63425f1089fdfe4e04d1fe70",
+								"details"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set user as admin(admin only)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNDEwODNkNWU0ZGYyMTZlNzZjMGU3ZSIsImVtYWlsIjoia2lyYXlhbWF0b0BlbWFpbC5jb20iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE2NjUyOTE4OTUsImV4cCI6MTY2NTMwMjY5NX0.-Q-lXfwBTmaB99Hb7CvCMtzrj8-sl-0GHEpVk0ADo3A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/users/634264f490b152fa8c0718f/admin",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"users",
+								"634264f490b152fa8c0718f",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "products",
+			"item": [
+				{
+					"name": "create product(admin only)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNDEwODNkNWU0ZGYyMTZlNzZjMGU3ZSIsImVtYWlsIjoia2lyYXlhbWF0b0BlbWFpbC5jb20iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE2NjUyOTE4OTUsImV4cCI6MTY2NTMwMjY5NX0.-Q-lXfwBTmaB99Hb7CvCMtzrj8-sl-0GHEpVk0ADo3A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"name\": \"COSORI Pro Air Fryer Oven Combo\",\r\n    \"category\": \"appliance\",\r\n    \"brandName\" : \"COSORI\",\r\n\t\"description\": \"COSORI use a host of features so that you can prep food with ease perfectly. \",\r\n\t\"price\": \"6000\",\r\n    \"manufacturer\" : \"COSORI\",\r\n    \"amount\" : 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/products/create",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"products",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "retrieve all active products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/products/",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"products",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "retrieve single product",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/products/634108a45e4df216e76c0e8a",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"products",
+								"634108a45e4df216e76c0e8a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update product information(admin only)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNDEwN2FiNDdkYjEyZjFiMTVlMzg5ZSIsImVtYWlsIjoiam9obmRvZUBlbWFpbC5jb20iLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNjY1MjE4MzAzLCJleHAiOjE2NjUyMjkxMDN9.R49VHvXhexb8oL7Gnb3ld_VIrkmZmdXDXnJW9n8ppUQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"name\": \"dumbbell\",\r\n    \"category\": \"Health/Fitness\",\r\n    \"brandName\" : \" Ironmaster Quick-Lock Adjustable Dumbbell System\",\r\n\t\"description\": \"This adjustable dumbbell set from Ironmaster looks and feels more like a traditional set of dumbbells than many other adjustable options, which is an appealing factor to some. Adjustable from 5 to 45 pounds in 2.5-pound (1.1-kg) increments, the weights are solidly made. No plastic here — another plus. This is a great set for someone who’s experienced with resistance training. To adjust the dumbbells, you have to add and remove plates, which can take a few seconds. If you change weights frequently, this may be an extra step you don’t appreciate.\",\r\n\t\"price\": 1000,\r\n    \"manufacturer\" : \"Ironmaster\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/products/634108a45e4df216e76c0e8a/update",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"products",
+								"634108a45e4df216e76c0e8a",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "archive product(admin only)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNDEwODNkNWU0ZGYyMTZlNzZjMGU3ZSIsImVtYWlsIjoia2lyYXlhbWF0b0BlbWFpbC5jb20iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE2NjUyMzMyOTMsImV4cCI6MTY2NTI0NDA5M30.bKNVbH37vmGZ6Z6MCm3OFna3QOkm_WyQCVEL6RK03Nw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/products/634108b35e4df216e76c0e8c/archive",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"products",
+								"634108b35e4df216e76c0e8c",
+								"archive"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "orders",
+			"item": [
+				{
+					"name": "non-admin user checkout(create order)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNDEwODNkNWU0ZGYyMTZlNzZjMGU3ZSIsImVtYWlsIjoia2lyYXlhbWF0b0BlbWFpbC5jb20iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE2NjUyOTE4OTUsImV4cCI6MTY2NTMwMjY5NX0.-Q-lXfwBTmaB99Hb7CvCMtzrj8-sl-0GHEpVk0ADo3A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"products\": [\r\n        {\r\n            \"productId\": \"634174520d7e5960dcad3eef\",\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"productId\": \"6341874f435e47c36465e8be\",\r\n            \"quantity\": 1\r\n        }\r\n    ],\r\n\t\"deliveryAddress\": {\r\n\t\t\"houseNo\": \"\",\r\n\t\t\"streetName\": \"\",\r\n\t\t\"city\": \"\",\r\n\t\t\"province\": \"\"\r\n\t}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/orders/6341083d5e4df216e76c0e7e/create",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"orders",
+								"6341083d5e4df216e76c0e7e",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "retrieve authenticated user order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNDEwODNkNWU0ZGYyMTZlNzZjMGU3ZSIsImVtYWlsIjoia2lyYXlhbWF0b0BlbWFpbC5jb20iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE2NjUyOTE4OTUsImV4cCI6MTY2NTMwMjY5NX0.-Q-lXfwBTmaB99Hb7CvCMtzrj8-sl-0GHEpVk0ADo3A",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/orders/user",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"orders",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "retrieve all orders",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNDEwN2FiNDdkYjEyZjFiMTVlMzg5ZSIsImVtYWlsIjoiam9obmRvZUBlbWFpbC5jb20iLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNjY1MjkzNDgxLCJleHAiOjE2NjUzMDQyODF9.QjeFx6Kd9j0O1Ms3XP0P_Beucul2-ALd0MHlzoW7wuE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/orders/all",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"orders",
+								"all"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "cart",
+			"item": [
+				{
+					"name": "add to cart",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "change product quantity",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
