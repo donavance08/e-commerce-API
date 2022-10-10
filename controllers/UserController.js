@@ -1,9 +1,10 @@
 const User = require('../models/User')
 const bcrypt = require('bcrypt')
 const auth = require('../auth')
+const Cart = require('../models/Cart')
 
 // New user registration
-module.exports.register =  async (data) => {
+module.exports.register =  (data) => {
 		
 	// Check first if email already in use
 	return User.findOne({email: data.email}).then((result) => {
@@ -14,6 +15,8 @@ module.exports.register =  async (data) => {
 		}
 		// Encrypt the password for security
 		let encrypted_password = bcrypt.hashSync(data.password, 10)
+		const cart =  new Cart({})
+		cart.save()
 		// Create a user based on Schema for saving to DB
 		let new_user = new User({
 			firstName: data.firstName,
@@ -21,6 +24,7 @@ module.exports.register =  async (data) => {
 			email: data.email,
 			contactNo: data.contactNo,
 			password: encrypted_password,
+			cartId: cart._id
 		})
 
 		// Save new_user to the database

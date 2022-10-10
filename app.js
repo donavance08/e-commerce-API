@@ -6,7 +6,7 @@ const cors = require('cors')
 const userRoutes = require('./routes/userRoutes')
 const productRoutes = require('./routes/productRoutes')
 const orderRoutes = require('./routes/orderRoutes')
-
+const cartRoutes = require('./routes/cartRoutes')
 
 // Initialize dotenv
 dotenv.config()
@@ -35,7 +35,7 @@ app.use(express.urlencoded({extended: true}))
 app.use('/users', userRoutes)
 app.use('/products', productRoutes)
 app.use('/orders', orderRoutes)
-
+app.use('/cart', cartRoutes)
 
 // app start listening to requests
 app.listen(port, () => console.log(`API is now running on localhost:${port}`))

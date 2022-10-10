@@ -41,7 +41,9 @@ const user_schema = new mongoose.Schema({
 	registrationDate: {
 		type: Date,
 		default: new Date()
-	}
+	},
+	cartId: mongoose.ObjectId
+
 })
 
 
