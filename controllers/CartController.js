@@ -1,8 +1,11 @@
 const Cart = require('../models/Cart')
+const User = require('../models/User')
+const Order = require('../models/Order')
 const mongoose = require('mongoose')
 
 // To add an item to user cart or increase quantity of a product on the cart
-// Need optimisation
+// Need optimisation - get data from database not from user input
+// only data from user will be quantity and id
 module.exports.addToCart = (cart_id, new_product) => {
 
 	// First locate the users cart 
@@ -35,7 +38,7 @@ module.exports.addToCart = (cart_id, new_product) => {
 			// replace the products content with the updated variable
 			result.products = stored_products
 			// Save the new updated result
-			return result.save().then(saved_cart => {
+			 result.save().then(saved_cart => {
 				if(saved_cart !== null){
 					return saved_cart
 				}
@@ -44,6 +47,21 @@ module.exports.addToCart = (cart_id, new_product) => {
 					message: "An unknown error has occured"
 				}
 			})
+
+			async function start() {
+				let g = await result.save().then(saved_cart => {
+				if(saved_cart !== null){
+					return saved_cart
+				}
+
+				return{ 
+					message: "An unknown error has occured"
+				}
+				return g
+			})
+			}
+
+			start()
 
 		}
 
@@ -157,5 +175,78 @@ module.exports.removeItem = (cart_id, for_removal_id) => {
 				message: "An unexpected error has occured!"
 			}
 		})
+	})
+}
+
+// To checkout 
+module.exports.checkout = (cart_id, user_id) => {
+
+	return Cart.findOne({_id: cart_id}).then(cart => {
+		if(cart === null){
+			return {
+				message: "Unable to load cart!"
+			}
+		}
+
+		const products = cart.products
+		// console.log(cart)
+		// console.log(products[0].subtotal);
+
+		if(products.length > 0){
+			const user_address = User.findOne({_id: user_id}).then(user => {
+				return user.address
+			})
+
+			let created_orders = []
+
+			for(let i =0 ; i < products.length; i++){
+				const new_order = new Order({
+					userId: user_id,
+					product: {
+						productId: products[i].productId,
+						price: products[i].price,
+						quantity: products[i].quantity
+					},
+					totalPrice: products[i].subtotal,
+					deliveryAddress: {
+						houseNo: user_address.houseNo,
+						streetName: user_address.streetName,
+						city: user_address.city,
+						province: user_address.province,
+						country: user_address.country,
+						zip: user_address.zip
+					}
+				})
+
+				function foo() {
+					return new_order.save().then(result=>{
+						// console.log(result);
+						return result
+					})
+
+				}
+				
+				let a = async () => {
+					const c = await foo()
+					console.log(c);
+					return c
+				}
+
+				let b = async() => {
+					return await a()
+				}
+				let d = b()
+				created_orders.push(a)
+				// console.log(created_orders);
+				console.log(d);
+			}
+
+			return created_orders
+		}
+
+		return {
+			message: "Cart is empty!"
+		}
+
 	})
 }

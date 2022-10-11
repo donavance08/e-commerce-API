@@ -24,6 +24,14 @@ module.exports.register =  (data) => {
 			email: data.email,
 			contactNo: data.contactNo,
 			password: encrypted_password,
+			address: {
+				houseNo: data.address.houseNo,
+				streetName: data.address.streetName,
+				city: data.address.city,
+				province: data.address.province,
+				country: data.address.country,
+				zip: data.address.zip
+			},
 			cartId: cart._id
 		})
 

@@ -2,22 +2,23 @@ const mongoose = require('mongoose')
 
 const order_schema  = new mongoose.Schema({
 	userId: {
-		type: String,
+		type: mongoose.ObjectId,
 		required: true
 	},
-	products: [{
+	product: {
 		productId: {
-			type: String,
+			type: mongoose.ObjectId,
 			required: true
 		},
+		price: Number,
 		quantity: {
 			type: Number, 
-			min: 1,
+			min: 0,
 			required: true
 		}
 		
-	}],
-	totalAmount: {
+	},
+	totalPrice: {
 		type: Number,
 		required: true
 	},
@@ -34,8 +35,8 @@ const order_schema  = new mongoose.Schema({
 		// Delivered - Order has been delivered
 		// Closed - Order has been completed.
 		// Archived - Order has been completed for more than 365 days and is now archived
-		enum: ["Pending", "Rejected" , "Ready for Dispatch", "Dispatched", "Delivered", "Closed", "Archived"],
-		default: "Pending"
+		enum: ["pending", "rejected" , "ready for dispatch", "dispatched", "delivered", "closed", "archived"],
+		default: "pending"
 	},
 	deliveryAddress: {
 		houseNo: Number,
@@ -45,7 +46,8 @@ const order_schema  = new mongoose.Schema({
 		country: {
 			type: String,
 			default: "Philippines"
-		}
+		},
+		zip: Number
 	}
 })
 

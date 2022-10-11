@@ -42,6 +42,17 @@ const user_schema = new mongoose.Schema({
 		type: Date,
 		default: new Date()
 	},
+	address :{
+		houseNo: Number,
+		streetName: String,
+		city: String,
+		province: String,
+		country: {
+			type: String,
+			default: "Philippines"
+		},
+		zip: Number
+	},
 	cartId: mongoose.ObjectId
 
 })

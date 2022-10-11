@@ -12,7 +12,7 @@ router.post('/create', auth.verify, (request, response) => {
 	})
 })
 
-// Get personal orders
+// Get user orders
 router.get('/user', auth.verify, (request, response) => {
 	// Forward isAdmin and user_id from token used additional validation  
 	const user_id = auth.decode(request.headers.authorization).id
