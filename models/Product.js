@@ -2,9 +2,9 @@ const mongoose = require('mongoose')
 
 // schema for use of the review property
 const review_schema = new mongoose.Schema({
-	userEmail: String,
+	userId: mongoose.ObjectId,
 	review: String,
-	startsRating: {
+	stars: {
 		type: Number,
 		min: 1,
 		max: 5
@@ -37,7 +37,7 @@ const product_schema = new mongoose.Schema({
 		type: String,
 		default: "PHP"
 	},
-	amount: {
+	quantity: {
 		type: Number,
 		default: 1
 	},

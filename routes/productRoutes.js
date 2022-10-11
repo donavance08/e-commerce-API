@@ -48,4 +48,12 @@ router.patch('/:id/archive', auth.verify, (request,response) => {
 	})
 })
 
+router.patch('/:id/review', auth.verify, (request, response) => {
+	const user_details = auth.decode(request.headers.authorization)
+
+	ProductController.createReview(user_details, request.params.id, request.body).then(result => {
+		response.send(result)
+	})
+})
+
 module.exports = router

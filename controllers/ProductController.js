@@ -1,4 +1,5 @@
 const Product = require('../models/Product')
+const mongoose = require('mongoose')
 
 // To add a new product(admin only)
 module.exports.createProduct = (data) => {
@@ -12,7 +13,8 @@ module.exports.createProduct = (data) => {
 			brandName: data.product.brandName,
 			manufacturer: data.product.manufacturer,
 			description: data.product.description,
-			price: data.product.price
+			price: data.product.price,
+			quantity: data.product.quantity
 		})
 
 		// Save the new product into the DB - return a message for success or failure
@@ -41,7 +43,7 @@ module.exports.createProduct = (data) => {
 // -----need further testing for non active products
 // To filter all active products
 module.exports.getAllActiveProducts = () => {
-	return Product.find({isActive: true}, {isActive: 0, createdOn: 0}).then((products) => {
+	return Product.find({isActive: true}, {isActive: 0, createdOn: 0, reviews: 0}).then((products) => {
 		if(products.length > 0){
 			return products
 		}
@@ -140,3 +142,54 @@ module.exports.archiveSingleProduct = (product_id, isAdmin) => {
 	})
 }
 
+// To add a review for a product
+module.exports.createReview = async (user_details, product_id, review) => {
+	// Admin cannot leave a review
+	if(user_details.isAdmin === true){
+		return {
+			message: "Admin cannot leave a review."
+		}
+	}
+	// First locate the product and return error if not found
+	let product =  await Product.findOne({_id: product_id}).then(product_found => {
+		if(product_found !== null){
+			return product_found
+		}
+
+		return null
+	})
+
+	// Cannot leave review for archived products
+	if(!product.isActive){
+		return {
+			message: "Product no longer active!"
+		}
+	}
+	// Once product is found proceed to add the review and calculate the average start rating
+	console.log(user_details.id);
+	if(product !== null){
+		// let user_review = new mongoose.Schema({
+		// 	userId: mongoose.ObjectId(user_details.id),
+		// 	review: review.review,
+		// 	stars: review.stars
+		// })
+
+		review["userId"] = {}
+		review.userId = user_details.id
+		product.reviews.push(review)
+		let stars = 0
+
+		for(let i = 0; i < product.reviews.length; i++){
+			stars += product.reviews[i].stars
+		}
+
+		product.starsRating = stars / product.reviews.length
+		return product.save().then(result => {
+			return result
+		})
+	}
+
+	return {
+		message: "Product not found!"
+	}
+}
