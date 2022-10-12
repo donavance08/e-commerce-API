@@ -250,6 +250,11 @@ module.exports.checkout = async (user) => {
 				return result
 			})
 
+			product.quantity -= products[i].quantity
+			product.save().then(update_product => {
+				update_product 
+			})
+
 			// save order details
 			created_orders.push(created_order)
 
