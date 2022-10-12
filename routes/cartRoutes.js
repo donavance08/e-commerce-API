@@ -30,8 +30,8 @@ router.patch('/:id/remove', auth.verify, (request,response) => {
 
 router.patch('/checkout', auth.verify, (request, response) => {
 	const user = auth.decode(request.headers.authorization)
-	// const user_id = auth.decode(request.headers.authorization).id
-	CartController.checkout(user).then(result => {
+
+	CartController.checkout(user, request.body).then(result => {
 		response.send(result)
 	})
 })

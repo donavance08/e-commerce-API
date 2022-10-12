@@ -171,7 +171,7 @@ module.exports.removeItem = (cart_id, for_removal_id) => {
 }
 
 // To checkout 
-module.exports.checkout = async (user) => {
+module.exports.checkout = async (user, address) => {
 	// only non admin can order
 	if(user.isAdmin){
 		return {
@@ -231,12 +231,12 @@ module.exports.checkout = async (user) => {
 				},
 				totalPrice: products[i].subtotal,
 				deliveryAddress: {
-					houseNo: user_address.houseNo,
-					streetName: user_address.streetName,
-					city: user_address.city,
-					province: user_address.province,
-					country: user_address.country,
-					zip: user_address.zip
+					houseNo: address.houseNo || user_address.houseNo,
+					streetName: address.streetName || user_address.streetName,
+					city: address.city || user_address.city,
+					province: address.province || user_address.province,
+					country: address.country || user_address.country,
+					zip: address.zip || user_address.zip
 				}
 			})
 
