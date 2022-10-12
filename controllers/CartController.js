@@ -15,7 +15,7 @@ module.exports.addToCart = (user, new_product) => {
 	}
 
 	// First locate the users cart 
-	return Cart.findOne({_id: user.id}).then(result => {
+	return Cart.findOne({_id: user.cartId}).then(result => {
 		// Once cart is found - retrieve old contents and save to variable
 		if(result !== null){
 			let stored_products = result.products
