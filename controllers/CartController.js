@@ -7,11 +7,15 @@ const mongoose = require('mongoose')
 // To add an item to user cart or increase quantity of a product on the cart
 // Need optimisation - get data from database not from user input
 // only data from user will be quantity and id
-module.exports.addToCart = (cart_id, new_product) => {
-	console.log(cart_id);
+module.exports.addToCart = (user, new_product) => {
+	if(user.isAdmin){
+		return Promise.resolve({
+			message: "Admin cannot use add to cart"
+		})
+	}
 
 	// First locate the users cart 
-	return Cart.findOne({_id: cart_id}).then(result => {
+	return Cart.findOne({_id: user.id}).then(result => {
 		// Once cart is found - retrieve old contents and save to variable
 		if(result !== null){
 			let stored_products = result.products
@@ -60,6 +64,7 @@ module.exports.addToCart = (cart_id, new_product) => {
 
 // To increment or decrement an item from the cart - item must be in the cart -- if not, it will return and error message
 module.exports.incrementOrDecrementQuantity = (cart_id, product_id, operator) => {
+
   	// verify operator falls between + or -
 	if(operator	!== "+" && operator !== "-"){
 		return Promise.resolve({
@@ -170,7 +175,7 @@ module.exports.checkout = async (user) => {
 	// only non admin can order
 	if(user.isAdmin){
 		return {
-			message: "Admin cannot create an order."
+			message: "Admin cannot checkout an order."
 		}
 	}
 

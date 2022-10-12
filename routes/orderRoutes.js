@@ -5,9 +5,9 @@ const OrderController = require('../controllers/OrderController')
 
 // Create an order
 router.post('/create', auth.verify, (request, response) => {
-	const user_id = auth.decode(request.headers.authorization).id
+	const user = auth.decode(request.headers.authorization)
 	
-	OrderController.createNewOrder(user_id, request.body).then((result) => {
+	OrderController.createNewOrder(user, request.body).then((result) => {
 		response.send(result)
 	})
 })
@@ -43,5 +43,6 @@ router.patch('/:id/cancel', auth.verify, (request, response) => {
 		response.send(result)
 	})
 })
+
 
 module.exports = router

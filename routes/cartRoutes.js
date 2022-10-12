@@ -6,8 +6,8 @@ module.exports = router
 
 // For adding a product to cart
 router.patch('/add', auth.verify, (request, response) => {
-	const cartId = auth.decode(request.headers.authorization).cartId
-	CartController.addToCart(cartId, request.body).then(result => {
+	const user = auth.decode(request.headers.authorization)
+	CartController.addToCart(user, request.body).then(result => {
 		response.send(result)
 	})
 })

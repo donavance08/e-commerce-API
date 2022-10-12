@@ -5,11 +5,16 @@ const mongoose = require('mongoose')
 // -----need cleanup, function too big, may need to divide parts into smaller functions to improve readability
 // a funtion to deduct amount to the inventory
 // To create a new order
-module.exports.createNewOrder  = async (user_id, order_details) => {
+module.exports.createNewOrder  = async (user, order_details) => {
+	if(!user.isAdmin){
+		return Promise.resolve({
+			message: "Manual order creation is for admin only!"
+		})
+	}
 
 	// create a new order 
 	const new_order = new Order({
-		userId: user_id,
+		userId: user.id,
 		product: {
 			productId: order_details.product.productId,
 			price: order_details.product.price,
