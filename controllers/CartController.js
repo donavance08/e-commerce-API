@@ -175,7 +175,7 @@ module.exports.checkout = async (user) => {
 	}
 
 	// retrieve card contents
-	const user_cart = await Cart.findOne({_id: user.cartId}).then(cart => {
+	const user_cart = await Cart.findOne({_id: user.cartId},).then(cart => {
 		if(cart === null){
 			return {
 				message: "Unable to load cart!"
@@ -209,7 +209,6 @@ module.exports.checkout = async (user) => {
 
 			// Check quantity and return error if no longer have enough in inventory
 			if(product.quantity < products[i].quantity){
-				console.log(true)
 				created_orders.push({
 					message: `${product.name} is no longer avaialable` 
 				})
@@ -236,11 +235,22 @@ module.exports.checkout = async (user) => {
 				}
 			})
 
+			// Save the order to DB
 			let created_order = await new_order.save().then(result=>{
 				return result
 			})
+
+			// Call this.removeItem to remove the item from the cart DB
+			this.removeItem(user.cartId,products[i].productId).then(result => {
+				return result
+			})
+
+			console.log(rest);
+
 			// save order details
 			created_orders.push(created_order)
+
+
 
 			product.quantity -= products[i].quantity
 
