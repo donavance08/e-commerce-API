@@ -86,7 +86,8 @@ module.exports.updateSingleProduct = (data) => {
 			brandName: data.updates.brandName,
 			manufacturer: data.updates.manufacturer,
 			description: data.updates.description,
-			price: data.updates.price
+			price: data.updates.price,
+			quantity: data.updates.quantity
 		}).then((updated_product) => {
 			if(updated_product !== null){
 				return {
