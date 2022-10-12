@@ -166,16 +166,16 @@ module.exports.removeItem = (cart_id, for_removal_id) => {
 }
 
 // To checkout 
-module.exports.checkout = async (payload) => {
+module.exports.checkout = async (user) => {
 	// only non admin can order
-	if(payload.isAdmin){
+	if(user.isAdmin){
 		return {
 			message: "Admin cannot create an order."
 		}
 	}
 
 	// retrieve card contents
-	const user_cart = await Cart.findOne({_id: payload.cartId}).then(cart => {
+	const user_cart = await Cart.findOne({_id: user.cartId}).then(cart => {
 		if(cart === null){
 			return {
 				message: "Unable to load cart!"
@@ -187,7 +187,7 @@ module.exports.checkout = async (payload) => {
 
 	const products = user_cart.products
 
-	let	user_address = await  User.findOne({_id: payload.id}).then(user => {
+	let	user_address = await  User.findOne({_id: user.id}).then(user => {
 		return user.address
 	})
 
@@ -207,8 +207,8 @@ module.exports.checkout = async (payload) => {
 				}
 			})
 
-			// Check quantity and return error if no longer have in inventory
-			if(product.quantity <= products[i].quantity){
+			// Check quantity and return error if no longer have enough in inventory
+			if(product.quantity < products[i].quantity){
 				console.log(true)
 				created_orders.push({
 					message: `${product.name} is no longer avaialable` 
@@ -219,7 +219,7 @@ module.exports.checkout = async (payload) => {
 
 			// create a new order
 			const new_order = new Order({
-				userId: payload.id,
+				userId: user.id,
 				product: {
 					productId: products[i].productId,
 					price: products[i].price,
@@ -253,4 +253,37 @@ module.exports.checkout = async (payload) => {
 	return {
 		message: "Cart is empty!"
 	}
+}
+
+// To get cart contents
+module.exports.getCart = (user) => {
+	return Cart.findOne({_id: user.cartId}).then(cart => {
+		if(cart !== null){
+			return cart
+		}
+
+		return {
+			message: "An unexpected error has occured. Please try again!"
+		}
+	})
+}
+
+// To get a cart by admin user
+module.exports.adminGetCart = (user, cart_id) => {
+	if(!user.isAdmin){
+		return	Promise.resolve({
+			message: "User must be admin to get other users cart information"
+		})
+	}
+
+	return Cart.findOne({_id: cart_id}).then(cart => {
+		if(cart !== null){
+			return cart
+		}
+
+		return {
+			message: "Cannot find cart!"
+		}
+	})
+
 }

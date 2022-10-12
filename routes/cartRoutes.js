@@ -29,11 +29,25 @@ router.patch('/:id/remove', auth.verify, (request,response) => {
 })
 
 router.patch('/checkout', auth.verify, (request, response) => {
-	const payload = auth.decode(request.headers.authorization)
+	const user = auth.decode(request.headers.authorization)
 	// const user_id = auth.decode(request.headers.authorization).id
-	CartController.checkout(payload).then(result => {
+	CartController.checkout(user).then(result => {
 		response.send(result)
 	})
+})
+
+router.get('/', auth.verify, (request, response) => {
+	const user = auth.decode(request.headers.authorization)
+	CartController.getCart(user).then(result => {
+		response.send(result)
+	})
+})
+
+router.get('/:id', auth.verify, (request, response) => {
+	const user = auth.decode(request.headers.authorization)
+	CartController.adminGetCart(user, request.params.id).then(result => {
+		response.send(result)
+	}) 
 })
 
 
