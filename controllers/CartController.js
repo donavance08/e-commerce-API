@@ -245,8 +245,6 @@ module.exports.checkout = async (user) => {
 				return result
 			})
 
-			console.log(rest);
-
 			// save order details
 			created_orders.push(created_order)
 

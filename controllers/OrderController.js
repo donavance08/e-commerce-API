@@ -72,3 +72,35 @@ module.exports.getAllOrders = (isAdmin) => {
 	})
 }
 
+module.exports.getOrderById = (user, order_id) => {
+	return Order.findOne({_id: order_id}).then(order => {
+		if(order !== null){
+			if(user.id == order.userId || user.isAdmin){
+				return order
+			}
+
+			return {
+				message: "Order does not belong to user!"
+			}
+		}
+
+		return {
+			message: "Order not found!"
+		}
+	})
+}
+
+module.exports.cancelOrder = async (user, order_id) => {
+	let order = await this.getOrderById(user, order_id).then(ordered => {
+		return ordered
+	})
+
+	if(order.message === undefined){
+		order.status = "cancelled"
+		return order.save().then(updated_order => {
+			return updated_order
+		})
+	}
+
+	return order
+}
