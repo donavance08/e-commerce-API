@@ -67,7 +67,8 @@ module.exports.login = (data) => {
 		// Verify if the password matches and respond with a token if true
 		if(is_password_correct){
 			return { 
-				accessToken: auth.createAccessToken(result)
+				accessToken: auth.createAccessToken(result),
+				message: "Login successfull."
 			}
 		}
 
