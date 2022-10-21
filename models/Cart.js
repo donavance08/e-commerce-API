@@ -10,6 +10,10 @@ const cart_schema = new mongoose.Schema({
 		totalAmount: {
 			type: Number,
 			default: 0
+		},
+		isActive: {
+			type: Boolean,
+			default: true
 		}
 })
 

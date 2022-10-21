@@ -3,11 +3,12 @@ const User = require('../models/User')
 const Order = require('../models/Order')
 const Product = require('../models/Product')
 const mongoose = require('mongoose')
+const ProductController = require('./ProductController')
 
 // To add an item to user cart or increase quantity of a product on the cart
 // Need optimisation - get data from database not from user input
 // only data from user will be quantity and id
-module.exports.addToCart = (user, new_product) => {
+/* module.exports.addToCart = (user, new_product) => {
 	if(user.isAdmin){
 		return Promise.resolve({
 			message: "Admin cannot use add to cart"
@@ -60,7 +61,87 @@ module.exports.addToCart = (user, new_product) => {
 			message: "Cannot find cart"
 		}
 	})
+} */
+
+function isQuantityEnough(product_quantity, quantity){
+	return product_quantity >= quantity
 }
+
+function findActiveCart(cart_id){
+	return Cart.findOne({_id: cart_id}).then(result => {
+		if(result.isActive){
+			return {
+				success: true,
+				cart: result
+			}
+		}
+
+		return {
+			success: false,
+			error: "Cart is disabled for this Id"
+		}
+
+	}).catch(error => {
+		return {
+			success: false,
+			error: "Cannot find cart!"
+		}
+	})
+}
+
+module.exports.addToCart = async (user, product_to_add) => {
+	
+	if(user.accessType != "user" || user.isAdmin){
+		return Promise.resolve({
+			success: false,
+			error: "Unable to use cart!"
+		})
+	}
+
+	const cart = await findActiveCart(user.cartId).then(result => {
+		if(result.success){
+			return result.cart
+		}
+
+		return null
+	})
+
+	const product = await ProductController.getSingleProduct(product_to_add.id).then(result => {
+		if(result.success){
+			return result.product
+		}
+
+		return null
+	})
+	console.log(product)
+	console.log(product._id)
+	console.log(product_to_add.quantity)
+	console.log(cart)
+	if(isQuantityEnough(product.quantity, product_to_add.quantity) && cart != null){
+		const subTotal = product.price * product_to_add.quantity
+
+		cart.products.push({
+			productId: product.id,
+			quantity: product_to_add.quantity,
+			price: product.price,
+			subtotal: subTotal
+		})
+		cart.totalAmount += subTotal
+
+		return cart.save().then(result => {
+			return {
+				success: true,
+				details: result
+			}
+		}).catch(error => {
+			return {
+				success: false,
+				error: error
+			}
+		})
+	}
+}
+
 
 // To increment or decrement an item from the cart - item must be in the cart -- if not, it will return and error message
 module.exports.incrementOrDecrementQuantity = (cart_id, product_id, operator) => {

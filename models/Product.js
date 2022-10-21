@@ -1,25 +1,15 @@
 const mongoose = require('mongoose')
 
-// schema for use of the review property
-const review_schema = new mongoose.Schema({
-	userId: mongoose.ObjectId,
-	review: String,
-	stars: {
-		type: Number,
-		min: 1,
-		max: 5
-	}
-})
-
 //schema of each product in the inventory
 const product_schema = new mongoose.Schema({
 	name: {
 		type: String,
-		required: [true, "Product name is required."]
+		required: [true, "Product name is required."],
+		index: true
 	},
 	category: {
-		type: String,
-		default: "none"
+		type: Array,
+		index: true
 	},
 	brandName: {
 		type: String, 
@@ -31,7 +21,8 @@ const product_schema = new mongoose.Schema({
 	},
 	price: {
 		type: Number,
-		required: [true, "Price is required"]
+		required: [true, "Price is required"],
+		index: true
 	},
 	currency: {
 		type: String,
@@ -45,6 +36,10 @@ const product_schema = new mongoose.Schema({
 		type: String,
 		required: [true, "Manufacturer is required"]
 	},
+	vendorId:{ 
+		type: mongoose.ObjectId,
+		index: true
+	},
 	isActive: {
 		type: Boolean,
 		default: true
@@ -53,9 +48,18 @@ const product_schema = new mongoose.Schema({
 		type: Number,
 		min: 0,
 		max: 5,
-		default: 0
+		default: 0,
+		index: true
 	}, 
-	reviews: [review_schema],
+	reviews: [{
+		userId: mongoose.ObjectId,
+		review: String,
+		stars: {
+			type: Number,
+			min: 1,
+			max: 5
+		}
+	}],
 	createdOn: {
 		type: Date,
 		default: new Date()

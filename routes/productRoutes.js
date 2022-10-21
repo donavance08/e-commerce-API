@@ -3,29 +3,34 @@ const router = express.Router()
 const ProductController = require('../controllers/ProductController')
 const auth = require('../auth')
 
-// To create a product(admin only)
-router.post('/create', auth.verify, (request, response) => {
-	const data = {
-		product: request.body,
-		isAdmin: auth.decode(request.headers.authorization).isAdmin
-	}
-	ProductController.createProduct(data).then((result) => {
-		response.send(result)
-	} )
-})
-
 // To get all active products
 router.get('/', (request,response) => {
-	ProductController.getAllActiveProducts().then((result) => {
+	ProductController.getProducts().then((result) => {
 		response.send(result)
 	})
 })
 
 // To get a product by its Id
 router.get('/:id', (request, response) => {
-	ProductController.getSingleProduct(request.params.id).then((result) => {
-		response.send(result)
-	})
+	function getProduct(product_id, is_admin, access_type, user_id){
+		ProductController.getSingleProduct(product_id, is_admin, access_type, user_id).then((result) => {
+			response.send(result)
+		})
+	}
+
+	const user = auth.decode(request.headers.authorization)
+
+	if(user){
+		const is_admin = user.isAdmin
+		const access_type = user.accessType
+		const user_id = user.id 
+
+		getProduct(request.params.id, is_admin, access_type, user_id)
+
+	}
+
+	getProduct(request.params.id)
+
 })
 
 // To update product details(admin only)
@@ -33,7 +38,8 @@ router.patch('/:id/update', auth.verify, (request, response) => {
 	const data = {
 		id: request.params.id,
 		updates: request.body,
-		isAdmin: auth.decode(request.headers.authorization).isAdmin
+		accessType: auth.decode(request.headers.authorization).accessType,
+		userId: auth.decode(request.headers.authorization).id
 	}
 	ProductController.updateSingleProduct(data).then((result)=> {
 		response.send(result)

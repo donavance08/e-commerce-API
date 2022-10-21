@@ -1,15 +1,5 @@
 const mongoose = require('mongoose')
 
-const contact_schema = new mongoose.Schema({
-	type: {
-		type: String,
-		default: "Cellphone"
-	},
-	number: {
-		type: String
-	}
-})
-
 const user_schema = new mongoose.Schema({
 	firstName: {
 		type: String,
@@ -24,20 +14,35 @@ const user_schema = new mongoose.Schema({
 	email: {
 		type: String,
 		required: [true, "Email is required."],
-		lowercase: true
+		lowercase: true,
+		index: true
 	},
 	contactNo: {
-		type: [contact_schema],
+		type: [{
+			type: {
+				type: String,
+				default: "Cellphone"
+			},
+			number: {
+				type: String
+			}
+		}],
 		required: [true, "At least 1 contact number is required."]	
 	},
 	password: {
 		type:String,
 		required: [true, "Password is required."]
 	},
+	accessType: {
+		type: String,
+		enum: ["buyer", "vendor", "courier"],
+		default: "user",
+		index: true
+	}, 
 	isAdmin: {
 		type: Boolean,
 		default: false
-	}, 
+	},
 	registrationDate: {
 		type: Date,
 		default: new Date()
@@ -53,10 +58,12 @@ const user_schema = new mongoose.Schema({
 		},
 		zip: Number
 	},
+	isActive: {
+		type: Boolean,
+		default: true
+	},
 	cartId: mongoose.ObjectId
 
 })
-
-
 
 module.exports = mongoose.model("User", user_schema)

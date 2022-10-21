@@ -7,6 +7,7 @@ module.exports.createAccessToken = (user) => {
 		id: user._id,
 		email: user.email,
 		cartId: user.cartId,
+		accessType: user.accessType,
 		isAdmin: user.isAdmin
 	}
 
@@ -61,7 +62,7 @@ module.exports.decode = (token) => {
 				// The "decode" method is used to obtain the information from the JWT
 				// The "{complete:true}" option allows us to return additional information from the JWT token
 				// Returns an object with access to the "payload" property which contains user information stored when the token was generated
-				// The payload contains information provided in the "createAccessToken" method defined above (e.g. id, email and isAdmin)
+				// The payload contains information provided in the "createAccessToken" method defined above (e.g. id, email, cartId and accessType )
 				return jwt.decode(token, {complete:true}).payload
 			};
 

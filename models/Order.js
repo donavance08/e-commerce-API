@@ -35,7 +35,7 @@ const order_schema  = new mongoose.Schema({
 		// Delivered - Order has been delivered
 		// Closed - Order has been completed.
 		// Archived - Order has been completed for more than 365 days and is now archived
-		enum: ["pending", "rejected" , "cancelled", "ready for dispatch", "dispatched", "delivered", "closed", "archived"],
+		enum: ["pending", "rejected" , "cancelled", "ready for dispatch", "dispatched", "delivered", "declined", "closed", "archived"],
 		default: "pending"
 	},
 	deliveryAddress: {

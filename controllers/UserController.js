@@ -3,19 +3,59 @@ const bcrypt = require('bcrypt')
 const auth = require('../auth')
 const Cart = require('../models/Cart')
 
-// New user registration
-module.exports.register =  (data) => {
-		
-	// Check first if email already in use
-	return User.findOne({email: data.email}).then((result) => {
+// projection format for admin use
+const projection_admin = {
+	password: 0,
+	isAdmin: 0,
+}
+
+// projection format for use of non admin accounts
+const projection_user = {
+	password: 0,
+	isAdmin: 0,
+	accessType: 0,
+	isActive: 0,
+	registrationDate: 0
+}
+// function to find a user by its _id
+const findId = (id, projection) => {
+	return User.findOne({_id: id}, projection).then((result) => {
 		if(result !== null){
-			return {
-				message: "Email already in use!"
-			}
+			return result
 		}
+
+		return {
+			message: "Cannot find user information!"
+		}
+	})
+}
+// check if email in use
+module.exports.isEmailUsed = (email)=> {
+	return User.findOne({email: email}).then(result => {
+		if(result != null){
+			return true
+		}
+		return false
+	})
+}
+
+// New user registration
+module.exports.register = async (data, accessType) => {
+
+	// Check first if email already in use
+	if(await this.isEmailUsed(data.email)){
+		return Promise.resolve({
+			message: "Email already in use!"
+		})
+	}
 		// Encrypt the password for security
 		let encrypted_password = bcrypt.hashSync(data.password, 10)
 		const cart =  new Cart({})
+
+		// Disable cart for non buyers
+		if(data.accessType != "buyer"){
+			cart.isActive = false
+		}
 		cart.save()
 		// Create a user based on Schema for saving to DB
 		let new_user = new User({
@@ -24,6 +64,7 @@ module.exports.register =  (data) => {
 			email: data.email,
 			contactNo: data.contactNo,
 			password: encrypted_password,
+			accessType: accessType,
 			address: {
 				houseNo: data.address.houseNo,
 				streetName: data.address.streetName,
@@ -51,7 +92,7 @@ module.exports.register =  (data) => {
 			}
 		})	
 
-	})
+	// })
 }
 // Login a user
 module.exports.login = (data) => {
@@ -80,24 +121,30 @@ module.exports.login = (data) => {
 }
 
 // Retrieve details of the user without sensitive information
-module.exports.getUserDetails = (token_id, isAdmin, user_id) => {
-	// verify to make sure only Admin or Owner of own account can view details else return an error message
-	if(token_id === user_id || isAdmin){
-		// look for the user information and return to the user
-		return User.findOne({_id: user_id}, {password: 0, isAdmin: 0}).then((result) => {
-			if(result !== null){
-				return result
-			}
+module.exports.getUserDetails = async (token_id, is_admin, user_id) => {
 
-			return {
-				message: "Cannot find user information!"
-			}
-		})
+	// Admin can locate any users account details
+	if(is_admin && user_id != undefined){
+		return findId(user_id, projection_admin)
 	}
 
-	return Promise.resolve({
-		message: "You must be logged in to own account before you can retrieve your details"
-	})
+	// To locate details for a non admin account
+	return findId(token_id, projection_user)
+
+}
+
+// delete a users account
+module.exports.deleteAccount = async (token_id, is_admin, user_id ) => {
+	let account
+	
+	if(is_admin && user_id != undefined){
+		account = await findId(user_id, projection_admin)
+	} else {
+		account  = await findId(token_id, projection_user)
+	}
+
+	account.isActive = false
+	return account.save()
 }
 
 // Convert user to Admin
