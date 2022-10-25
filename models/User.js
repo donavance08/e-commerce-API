@@ -35,7 +35,7 @@ const user_schema = new mongoose.Schema({
 	},
 	accessType: {
 		type: String,
-		enum: ["buyer", "vendor", "courier"],
+		enum: ["user", "vendor", "courier"],
 		default: "user",
 		index: true
 	}, 

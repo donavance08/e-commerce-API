@@ -63,6 +63,10 @@ const product_schema = new mongoose.Schema({
 	createdOn: {
 		type: Date,
 		default: new Date()
+	},
+	isShowcase:{
+		type: Boolean,
+		default: false
 	}
 })
 

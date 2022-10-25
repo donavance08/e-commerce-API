@@ -4,64 +4,7 @@ const Order = require('../models/Order')
 const Product = require('../models/Product')
 const mongoose = require('mongoose')
 const ProductController = require('./ProductController')
-
-// To add an item to user cart or increase quantity of a product on the cart
-// Need optimisation - get data from database not from user input
-// only data from user will be quantity and id
-/* module.exports.addToCart = (user, new_product) => {
-	if(user.isAdmin){
-		return Promise.resolve({
-			message: "Admin cannot use add to cart"
-		})
-	}
-
-	// First locate the users cart 
-	return Cart.findOne({_id: user.cartId}).then(result => {
-		// Once cart is found - retrieve old contents and save to variable
-		if(result !== null){
-			let stored_products = result.products
-			let isFound = false
-
-			// Loop through cart contents to see if the product to be added already exists
-			// If it exists, proceed to increment its quantity by the quantity of the input
-			for(let i = 0; i < stored_products.length; i++){
-				if(stored_products[i].productId.equals(new_product.productId)){
-					stored_products[i].quantity += new_product.quantity
-					stored_products[i].subtotal += new_product.quantity * new_product.price
-					isFound = true
-					break
-				}
-			
-			}
-
-			// If the product is not yet on the list - proceed to add it
-			if(!isFound){
-				new_product.subtotal = new_product.quantity * new_product.price
-				stored_products.push(new_product)
-			}
-
-			// Add the total value of the added product to the totalAmount
-			result.totalAmount += new_product.price * new_product.quantity
-			// replace the products content with the updated variable
-			result.products = stored_products
-			// Save the new updated result
-			return result.save().then(saved_cart => {
-				if(saved_cart !== null){
-					return saved_cart
-				}
-
-				return{ 
-					message: "An unknown error has occured"
-				}
-			})
-
-		}
-
-		return {
-			message: "Cannot find cart"
-		}
-	})
-} */
+const OrderController = require	('./OrderController')
 
 function isQuantityEnough(product_quantity, quantity){
 	return product_quantity >= quantity
@@ -89,7 +32,7 @@ function findActiveCart(cart_id){
 	})
 }
 
-module.exports.addToCart = async (user, product_to_add) => {
+module.exports.addToCart = async (user, product_id) => {
 	
 	if(user.accessType != "user" || user.isAdmin){
 		return Promise.resolve({
@@ -106,40 +49,35 @@ module.exports.addToCart = async (user, product_to_add) => {
 		return null
 	})
 
-	const product = await ProductController.getSingleProduct(product_to_add.id).then(result => {
+	const product = await ProductController.getSingleProduct(product_id).then(result => {
 		if(result.success){
 			return result.product
 		}
 
 		return null
 	})
-	console.log(product)
-	console.log(product._id)
-	console.log(product_to_add.quantity)
-	console.log(cart)
-	if(isQuantityEnough(product.quantity, product_to_add.quantity) && cart != null){
-		const subTotal = product.price * product_to_add.quantity
 
+	const product_ids = cart.products.map(product => product.productId.toString())
+	const index = product_ids.indexOf(product_id);
+	
+	if(index !== -1){
+		cart.products[index].quantity += 1
+		cart.products[index].subtotal += product.price
+		cart.total += product.price
+	} else {
 		cart.products.push({
 			productId: product.id,
-			quantity: product_to_add.quantity,
-			price: product.price,
-			subtotal: subTotal
+			quantity: 1,
+			subtotal: product.price
 		})
-		cart.totalAmount += subTotal
-
-		return cart.save().then(result => {
-			return {
-				success: true,
-				details: result
-			}
-		}).catch(error => {
-			return {
-				success: false,
-				error: error
-			}
-		})
+		cart.total += product.price
 	}
+		
+	return cart.save().then(result => {
+		return true
+	}).catch(error => {
+		return false
+	})
 }
 
 
@@ -210,19 +148,35 @@ module.exports.incrementOrDecrementQuantity = (cart_id, product_id, operator) =>
 }
 
 // To remove an item from the cart
-module.exports.removeItem = (cart_id, for_removal_id) => {
-	// Located users cart
-	return Cart.findOne({_id: cart_id}).then(result => {
+module.exports.removeItem = async (cart_id, to_remove) => {
+
+	// if to_remove is an array, remove the items by the array value
+	if(Array.isArray(to_remove)){
+	
+		const cart = await Cart.findOne({_id: cart_id}).then(result => result)
+		
+		for(let i = 0; i<to_remove.length; i++){
+			const product_ids = cart.products.map(product => product.productId.toString())
+			const index = product_ids.indexOf(to_remove[i].toString())
+			cart.total -= cart.products[index].subtotal	
+			cart.products.splice(index, 1)
+		}
+		return cart.save().then(result => result);
+	}
+		
+		// if to_remove is not an array
+		return Cart.findOne({_id: cart_id}).then(result => {
 		// Save contents of cart to variable
-		let stored_products = result.products
+		let { stored_products }= result
 		let total_item_price
 		let item_found = false
 
 		// Loop through cart contents to find item to be deleted
 		for(let i = 0; i < stored_products.length; i++){
 			// Once found proceed to delete
-			if(stored_products[i].productId.equals(for_removal_id)){
-				total_item_price = stored_products[i].price * stored_products[i].quantity
+			if(stored_products[i].productId.equals(to_remove)){
+				console.log(true);
+				total_item_price = stored_products[i].subtotal
 				stored_products.splice(i, 1)
 				item_found = true
 				break
@@ -237,7 +191,7 @@ module.exports.removeItem = (cart_id, for_removal_id) => {
 		}
 
 		// Update new totalAmount
-		result.totalAmount -= total_item_price
+		result.total -= total_item_price
 		// Save the updated cart 
 		return result.save().then(updated_cart => {
 			if(updated_cart !== null){
@@ -255,9 +209,10 @@ module.exports.removeItem = (cart_id, for_removal_id) => {
 module.exports.checkout = async (user, address) => {
 	// only non admin can order
 	if(user.isAdmin){
-		return {
+		return Promise.resolve({
+			success: false,
 			message: "Admin cannot checkout an order."
-		}
+		})
 	}
 
 	// retrieve card contents
@@ -267,92 +222,126 @@ module.exports.checkout = async (user, address) => {
 				message: "Unable to load cart!"
 			}
 		}
-
 		return cart
 	})
 
-	const products = user_cart.products
+	
+	const { products } = user_cart
 
 	let	user_address = await  User.findOne({_id: user.id}).then(user => {
 		return user.address
 	})
 
-
-	// console.log(products);
-
 	if(products.length > 0){
 
-		let created_orders = []
-
-		for(let i =0 ; i < products.length; i++){
-
-			// retrieve product in database
-			let product = await Product.findOne({_id: products[i].productId}).then(result => {
-				if(result !== null){
-					return result
-				}
+		const final_products = products.map(product_info => {
+			product_info.price =  ProductController.getSingleProduct(product_info.id).then(product_info_from_db => {
+				return product_info_from_db.price
 			})
 
-			// Check quantity and return error if no longer have enough in inventory
-			if(product.quantity < products[i].quantity){
-				created_orders.push({
-					message: `${product.name} is no longer avaialable` 
-				})
+			return product_info
+		})
 
-				continue
+		const subtotals =  products.map(product_info => product_info.subtotal)
+
+		const order_details = {
+			userId: user.id,
+			products: final_products,
+			totalPrice: subtotals.reduce((prev, curr) => prev + curr, 0),
+			deliveryAddress: {
+			houseNo: address.houseNo || user_address.houseNo,
+			streetName: address.streetName || user_address.streetName,
+			city: address.city || user_address.city,
+			province: address.province || user_address.province,
+			country: address.country || user_address.country,
+			zip: address.zip || user_address.zip
 			}
-
-			// create a new order
-			const new_order = new Order({
-				userId: user.id,
-				product: {
-					productId: products[i].productId,
-					price: products[i].price,
-					quantity: products[i].quantity
-				},
-				totalPrice: products[i].subtotal,
-				deliveryAddress: {
-					houseNo: address.houseNo || user_address.houseNo,
-					streetName: address.streetName || user_address.streetName,
-					city: address.city || user_address.city,
-					province: address.province || user_address.province,
-					country: address.country || user_address.country,
-					zip: address.zip || user_address.zip
-				}
-			})
-
-			// Save the order to DB
-			let created_order = await new_order.save().then(result=>{
-				return result
-			})
-
-			// Call this.removeItem to remove the item from the cart DB
-			this.removeItem(user.cartId,products[i].productId).then(result => {
-				return result
-			})
-
-
-			product.quantity -= products[i].quantity
-			product.save().then(update_product => {
-				update_product 
-			})
-
-			// save order details
-			created_orders.push(created_order)
-
 		}
 
-		// return order details
-		return created_orders
+
+		const saved_order = await OrderController.createNewOrder(user.id, order_details)
+		
+		const products_for_removal = products.map(product => product.productId)
+		// Call this.removeItem to remove the item from the cart DB
+		this.removeItem(user.cartId,products_for_removal).then(result => {
+			return result
+		})
+	
+		return {
+			success: true,
+			orders: saved_order
+		}
+
+		// let created_orders = []
+
+		// for(let i =0 ; i < products.length; i++){
+
+		// 	// retrieve product in database
+		// 	let product = await Product.findOne({_id: products[i].productId}).then(result => {
+		// 		if(result !== null){
+		// 			return result
+		// 		}
+		// 	})
+
+		// 	// Check quantity and return error if no longer have enough in inventory
+		// 	if(product.quantity < products[i].quantity){
+		// 		created_orders.push({
+		// 			message: `${product.name} is no longer avaialable` 
+		// 		})
+
+		// 		continue
+		// 	}
+
+		// 	// create a new order
+		// 	const new_order = new Order({
+		// 		userId: user.id,
+		// 		product: {
+		// 			productId: products[i].productId,
+		// 			price: products[i].price,
+		// 			quantity: products[i].quantity
+		// 		},
+		// 		totalPrice: products[i].subtotal,
+		// 		deliveryAddress: {
+		// 			houseNo: address.houseNo || user_address.houseNo,
+		// 			streetName: address.streetName || user_address.streetName,
+		// 			city: address.city || user_address.city,
+		// 			province: address.province || user_address.province,
+		// 			country: address.country || user_address.country,
+		// 			zip: address.zip || user_address.zip
+		// 		}
+		// 	})
+
+		// 	// Save the order to DB
+		// 	let created_order = await 
+
+
+
+
+		// 	product.quantity -= products[i].quantity
+		// 	product.save().then(updated_product => {
+		// 		updated_product 
+		// 	})
+
+		// 	// save order details
+		// 	created_orders.push(created_order)
+
+		// }
+
+		// // return order details
+		// return {
+		// 	success: true,
+		// 	orders: created_orders
+		// }
 	}
 
-	return {
+	return Promise.resolve({
+		success: false,
 		message: "Cart is empty!"
-	}
+	})
 }
 
 // To get cart contents
-module.exports.getCart = (user) => {
+module.exports.getCartContents = (user) => {
 	return Cart.findOne({_id: user.cartId}).then(cart => {
 		if(cart !== null){
 			return cart

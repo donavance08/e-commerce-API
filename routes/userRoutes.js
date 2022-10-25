@@ -4,6 +4,11 @@ const UserController = require('../controllers/UserController')
 const auth = require('../auth')
 module.exports = router
 
+router.post('/check-email', (request,response) => {
+	
+	UserController.isEmailUsed(request.body.email).then(result => response.send(result))
+
+})
 // To register a new user
 router.post('/register', (request, response) => {
 	UserController.register(request.body, "user").then((result) => {
@@ -20,6 +25,7 @@ router.post('/login', (request, response) => {
 
 // To retrieve user details
 router.get('/account/details', auth.verify, (request,response) => {
+	
 	// Save id and isAdmin from token to use for pulling up user info
 	const user_id = auth.decode(request.headers.authorization).id
 	const is_admin = auth.decode(request.headers.authorization).isAdmin

@@ -48,33 +48,59 @@ module.exports.getProducts = (vendor_id) => {
 
 // Returns the product using its Id for non logged in user if product is active 
 // Only admin and vendor can search for archived products
-module.exports.getSingleProduct = ( product_id, is_admin, access_type, user_id ) => {
+module.exports.getSingleProduct = async ( product_id, is_admin, access_type, user_id ) => {
 
-	return Product.findById(product_id).then((product) => {
-			const found_product = {
-				success: true, 
-				product: product
-			}
-
-			if((product !== null && !product.isActive) && 
-			(is_admin || access_type === 'vendor' && product.vendorId.toString() === user_id)){
-				return found_product
-			} else if(product.isActive){
-				return found_product
-			}
-
-			return {
-				success: false,
-				error: "Product not found!"
-			}
-
-	}).catch(error => {
+	const product = await Product.findById(product_id).then((product) => product).catch(error => {
 		console.log(error)
 		return {
 			success: false,
 			error: "Product ID invalid."
 		}
 	});
+	
+	const found_product = {
+		success: true, 
+		product: product
+	}
+
+	if((product !== null && !product.isActive) && 
+	(is_admin || access_type === 'vendor' && product.vendorId.toString() === user_id)){
+		return found_product
+	} else if(product.isActive){
+		return found_product
+	}
+
+	return Promise.resolve({
+		success: false,
+		error: "Product not found!"
+	})
+	// return Product.findById(product_id).then((product) => {
+	// 		const found_product = {
+	// 			success: true, 
+	// 			product: product
+	// 		}
+
+	// 		if((product !== null && !product.isActive) && 
+	// 		(is_admin || access_type === 'vendor' && product.vendorId.toString() === user_id)){
+	// 			return found_product
+	// 		} else if(product.isActive){
+
+	// 			// console.log(`found product ${product}`)
+	// 			return found_product
+	// 		}
+
+	// 		return {
+	// 			success: false,
+	// 			error: "Product not found!"
+	// 		}
+
+	// }).catch(error => {
+	// 	console.log(error)
+	// 	return {
+	// 		success: false,
+	// 		error: "Product ID invalid."
+	// 	}
+	// });
 };
 
 // To update properties of a single product

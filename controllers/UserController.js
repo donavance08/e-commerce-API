@@ -20,6 +20,7 @@ const projection_user = {
 // function to find a user by its _id
 const findId = (id, projection) => {
 	return User.findOne({_id: id}, projection).then((result) => {
+		
 		if(result !== null){
 			return result
 		}
@@ -53,7 +54,7 @@ module.exports.register = async (data, accessType) => {
 		const cart =  new Cart({})
 
 		// Disable cart for non buyers
-		if(data.accessType != "buyer"){
+		if(data.accessType != "user"){
 			cart.isActive = false
 		}
 		cart.save()
@@ -65,14 +66,14 @@ module.exports.register = async (data, accessType) => {
 			contactNo: data.contactNo,
 			password: encrypted_password,
 			accessType: accessType,
-			address: {
-				houseNo: data.address.houseNo,
-				streetName: data.address.streetName,
-				city: data.address.city,
-				province: data.address.province,
-				country: data.address.country,
-				zip: data.address.zip
-			},
+			// address: {
+			// 	houseNo: data.address.houseNo,
+			// 	streetName: data.address.streetName,
+			// 	city: data.address.city,
+			// 	province: data.address.province,
+			// 	country: data.address.country,
+			// 	zip: data.address.zip
+			// },
 			cartId: cart._id
 		})
 

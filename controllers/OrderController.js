@@ -1,32 +1,28 @@
 const Order = require('../models/Order')
 const Product = require('../models/Product')
 const mongoose = require('mongoose')
+const Hash = require('../hash.js')
 
 // -----need cleanup, function too big, may need to divide parts into smaller functions to improve readability
 // a funtion to deduct amount to the inventory
 // To create a new order
 module.exports.createNewOrder  = async (user, order_details) => {
-	if(!user.isAdmin){
-		return Promise.resolve({
-			message: "Manual order creation is for admin only!"
-		})
-	}
 
-	// create a new order 
+	const order_id = Hash.generateOrderNumber(order_details.userId);
+
+	// create a new order
 	const new_order = new Order({
-		userId: user.id,
-		product: {
-			productId: order_details.product.productId,
-			price: order_details.product.price,
-			quantity: order_details.product.quantity
-		},
+		orderId: order_id,
+		userId: order_details.userId,
+		products: order_details.products,
 		totalPrice: order_details.totalPrice,
 		deliveryAddress: {
 			houseNo: order_details.deliveryAddress.houseNo,
 			streetName: order_details.deliveryAddress.streetName,
 			city: order_details.deliveryAddress.city,
 			province: order_details.deliveryAddress.province,
-			country: order_details.deliveryAddress.country
+			country: order_details.deliveryAddress.country,
+			zip: order_details.deliveryAddress.zip
 		}
 	})
 

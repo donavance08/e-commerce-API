@@ -13,20 +13,18 @@ router.get('/', (request,response) => {
 // To get a product by its Id
 router.get('/:id', (request, response) => {
 	function getProduct(product_id, is_admin, access_type, user_id){
-		ProductController.getSingleProduct(product_id, is_admin, access_type, user_id).then((result) => {
+		ProductController.getSingleProduct(product_id, is_admin, access_type, user_id).then((result) => {			
 			response.send(result)
 		})
 	}
-
 	const user = auth.decode(request.headers.authorization)
-
 	if(user){
 		const is_admin = user.isAdmin
 		const access_type = user.accessType
 		const user_id = user.id 
 
 		getProduct(request.params.id, is_admin, access_type, user_id)
-
+		return 
 	}
 
 	getProduct(request.params.id)
