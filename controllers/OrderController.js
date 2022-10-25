@@ -1,7 +1,7 @@
 const Order = require('../models/Order')
 const Product = require('../models/Product')
 const mongoose = require('mongoose')
-const Hash = require('../hash.js')
+const Hash = require('../Hash.js')
 
 // -----need cleanup, function too big, may need to divide parts into smaller functions to improve readability
 // a funtion to deduct amount to the inventory
