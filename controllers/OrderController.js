@@ -44,14 +44,22 @@ module.exports.getUserOrders = (user_id) => {
 	// Retrieve all orders of this user -if order(s) is found: return result -else: return an error
 		return Order.find({userId: user_id}).then(result => {
 			if(result.length > 0){
-				return result
+				return{
+					success: true,
+					orders: result
+				}	
 			}
 
 			return {
+				success: false,
 				message: "This user has no orders yet."
 			}
 		}).catch(error => {
-			message: "Unknown error has occured!"
+			return {
+				sucess: false,
+				message: "Unknown error has occured!"
+			}
+		
 		})
 
 } 

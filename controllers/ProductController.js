@@ -21,10 +21,12 @@ module.exports.addProduct = async (vendor_id, product) => {
 		category: product.category,
 		brandName: product.brandName,
 		description: product.description,
+		imageLink: product.imageLink,
 		price: product.price,
 		quantity: product.quantity,
 		manufacturer: product.manufacturer,
-		vendorId: vendor_id
+		vendorId: vendor_id,
+
 	})
 
 	return new_product.save().then(result => result)
@@ -51,7 +53,6 @@ module.exports.getProducts = (vendor_id) => {
 module.exports.getSingleProduct = async ( product_id, is_admin, access_type, user_id ) => {
 
 	const product = await Product.findById(product_id).then((product) => product).catch(error => {
-		console.log(error)
 		return {
 			success: false,
 			error: "Product ID invalid."
@@ -74,33 +75,7 @@ module.exports.getSingleProduct = async ( product_id, is_admin, access_type, use
 		success: false,
 		error: "Product not found!"
 	})
-	// return Product.findById(product_id).then((product) => {
-	// 		const found_product = {
-	// 			success: true, 
-	// 			product: product
-	// 		}
-
-	// 		if((product !== null && !product.isActive) && 
-	// 		(is_admin || access_type === 'vendor' && product.vendorId.toString() === user_id)){
-	// 			return found_product
-	// 		} else if(product.isActive){
-
-	// 			// console.log(`found product ${product}`)
-	// 			return found_product
-	// 		}
-
-	// 		return {
-	// 			success: false,
-	// 			error: "Product not found!"
-	// 		}
-
-	// }).catch(error => {
-	// 	console.log(error)
-	// 	return {
-	// 		success: false,
-	// 		error: "Product ID invalid."
-	// 	}
-	// });
+	
 };
 
 // To update properties of a single product
@@ -133,7 +108,7 @@ module.exports.updateSingleProduct = async (data) => {
 		success: false,
 		message: "Failed to update product!"
 	})
-}
+};
 
 // ** work on archive next *
 
@@ -166,7 +141,7 @@ module.exports.archiveSingleProduct = (product_id, isAdmin) => {
 	return Promise.resolve({
 		message: "User must be an admin to archive a product!"
 	})
-}
+};
 
 // To add a review for a product
 module.exports.createReview = async (user_details, product_id, review) => {
@@ -192,7 +167,6 @@ module.exports.createReview = async (user_details, product_id, review) => {
 		}
 	}
 	// Once product is found proceed to add the review and calculate the average start rating
-	console.log(user_details.id);
 	if(product !== null){
 		// let user_review = new mongoose.Schema({
 		// 	userId: mongoose.ObjectId(user_details.id),
@@ -218,4 +192,28 @@ module.exports.createReview = async (user_details, product_id, review) => {
 	return {
 		message: "Product not found!"
 	}
-}
+};
+
+module.exports.isEnoughQuantity = async (quantity, product_id) => {
+	return await Product.findById(product_id).then(result => {
+		if(result.quantity >= quantity){
+			return {
+				success: true
+			}
+		}
+
+		return {
+			success: false,
+			name: result.name
+		}
+		
+	})
+};
+
+module.exports.updateProductQuantity = (product_id, quantity) => {
+	return Product.findById(product_id).then(result => {
+		result.quantity -= quantity;
+
+		return result.save().then(saved_result => saved_result);
+	});
+};

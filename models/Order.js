@@ -11,12 +11,19 @@ const order_schema  = new mongoose.Schema({
 			type: mongoose.ObjectId,
 			required: true
 		},
+		name: String,
 		price: Number,
+		imageLink: String,
 		quantity: {
 			type: Number, 
 			min: 0,
 			required: true
+		},
+		subtotal: {
+			type: Number,
+			default: 0
 		}
+
 		
 	}],
 	totalPrice: {

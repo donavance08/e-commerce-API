@@ -67,6 +67,10 @@ const product_schema = new mongoose.Schema({
 	isShowcase:{
 		type: Boolean,
 		default: false
+	},
+	imageLink: {
+		type: String,
+		default: ""
 	}
 })
 
