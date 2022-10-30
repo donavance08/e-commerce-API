@@ -64,14 +64,3 @@ router.patch('/account/details/delete/:id', auth.verify, (request,response)=> {
 })
 
 
-
-// To change user access to admin
-// ** disabled *
-// router.patch('/:id/admin', auth.verify, (request, response) => {
-// 	const isAdmin = auth.decode(request.headers.authorization).isAdmin
-
-// 	UserController.changeToAdmin(isAdmin, request.params.id).then(result => {
-// 		response.send(result)
-// 	})
-// })
-

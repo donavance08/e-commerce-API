@@ -13,7 +13,6 @@ const projection_admin = {
 const projection_user = {
 	password: 0,
 	isAdmin: 0,
-	accessType: 0,
 	isActive: 0,
 	registrationDate: 0
 }
@@ -66,14 +65,7 @@ module.exports.register = async (data, accessType) => {
 			contactNo: data.contactNo,
 			password: encrypted_password,
 			accessType: accessType,
-			// address: {
-			// 	houseNo: data.address.houseNo,
-			// 	streetName: data.address.streetName,
-			// 	city: data.address.city,
-			// 	province: data.address.province,
-			// 	country: data.address.country,
-			// 	zip: data.address.zip
-			// },
+			storeName: data.storeName,
 			cartId: cart._id
 		})
 

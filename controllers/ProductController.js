@@ -6,13 +6,18 @@ const User = require('../models/User')
 module.exports.addProduct = async (vendor_id, product) => {
 	const vendor = await User.findOne({_id: vendor_id}, {accessType: 1}).then(result => {
 		if(result !== null){
-			return result
+			return {
+				success: true,
+				result: result
+			} 
 		}
 
-		return false
+		return {
+			success: false
+		}
 	})
 
-	if(vendor.accessType !== "vendor"){
+	if(vendor.result.accessType !== "vendor"){
 		return 
 	}
 
@@ -29,7 +34,12 @@ module.exports.addProduct = async (vendor_id, product) => {
 
 	})
 
-	return new_product.save().then(result => result)
+	return new_product.save().then(result => {
+		return {
+			success: true,
+			result: result
+		}
+	})
 }
 
 // To filter all active products
@@ -88,13 +98,17 @@ module.exports.updateSingleProduct = async (data) => {
 	})
 
 	if(product !== null && product.vendorId.toString() === data.userId){
-		product.name = data.updates.name,
-		product.category = data.updates.category,
+		
 		product.brandName = data.updates.brandName,
-		product.manufacturer = data.updates.manufacturer,
+		product.category = data.updates.category,
 		product.description = data.updates.description,
+		product.imageLink = data.updates.imageLink,
+		product.isActive = data.updates.isActive,
+		product.manufacturer = data.updates.manufacturer,
+		product.name = data.updates.name,
 		product.price = data.updates.price,
 		product.quantity = data.updates.quantity
+
 
 		return product.save().then(result => {
 			return {
