@@ -74,9 +74,14 @@ module.exports.addToCart = async (user, product_id) => {
 	}
 		
 	return cart.save().then(result => {
-		return product
+		return {
+			success: true,
+			product: product
+		}
 	}).catch(error => {
-		return false
+		return{
+			success: false,
+		} 
 	})
 }
 
