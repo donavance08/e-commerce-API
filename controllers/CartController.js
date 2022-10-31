@@ -89,7 +89,7 @@ module.exports.addToCart = async (user, product_id) => {
 // To increment or decrement an item from the cart - item must be in the cart -- if not, it will return and error message
 module.exports.incrementOrDecrementQuantity = async (cart_id, product_id, operator) => {
 
-  	// verify operator falls between + or -
+  	// verify that we are using correct operator
 	if(operator	!== "+" && operator !== "-"){
 		return Promise.resolve({
 				message: "Incorrect operator"
@@ -123,7 +123,7 @@ module.exports.incrementOrDecrementQuantity = async (cart_id, product_id, operat
 		}
 		
 		return product
-	})
+	}).filter(product => product.quantity > 0)
 	cart.products = cart_contents
 
 	return cart.save().then(result => {
@@ -134,10 +134,8 @@ module.exports.incrementOrDecrementQuantity = async (cart_id, product_id, operat
 
 // To remove an item from the cart
 module.exports.removeItem = async (cart_id, to_remove) => {
-
 	// if to_remove is an array, remove the items by the array value
 	if(Array.isArray(to_remove)){
-	
 		const cart = await Cart.findOne({_id: cart_id}).then(result => result)
 		
 		for(let i = 0; i<to_remove.length; i++){
@@ -146,7 +144,12 @@ module.exports.removeItem = async (cart_id, to_remove) => {
 			cart.total -= cart.products[index].subtotal	
 			cart.products.splice(index, 1)
 		}
-		return cart.save().then(result => result);
+		return cart.save().then(result => {
+			return {success: true,
+				result: result
+			}	
+
+		});
 	}
 		
 		// if to_remove is not an array
