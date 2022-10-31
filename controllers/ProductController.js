@@ -162,6 +162,7 @@ module.exports.createReview = async (user_details, product_id, review) => {
 	// Admin cannot leave a review
 	if(user_details.isAdmin === true){
 		return {
+			success: false,
 			message: "Admin cannot leave a review."
 		}
 	}
@@ -177,6 +178,7 @@ module.exports.createReview = async (user_details, product_id, review) => {
 	// Cannot leave review for archived products
 	if(!product.isActive){
 		return {
+			success: false,
 			message: "Product no longer active!"
 		}
 	}
@@ -199,11 +201,15 @@ module.exports.createReview = async (user_details, product_id, review) => {
 
 		product.starsRating = stars / product.reviews.length
 		return product.save().then(result => {
-			return result
+			return {
+				success: true,
+				result: result
+			}
 		})
 	}
 
 	return {
+		success: false,
 		message: "Product not found!"
 	}
 };
